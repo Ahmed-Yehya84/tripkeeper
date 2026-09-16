@@ -2,10 +2,11 @@
   "name": "uber-driver-bot",
   "version": "0.1.0",
   "type": "module",
-  "scripts": { "start": "node src/index.js" },
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "dependencies": {
-    "telegraf": "^4",
-    "better-sqlite3": "^11",
-    "dotenv": "^16"
+    "dotenv": "^16",
+    "telegraf": "^4"
   }
 }

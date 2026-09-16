@@ -1,11 +1,13 @@
-import Database from 'better-sqlite3';
-import { readFileSync } from 'fs';
+// Using Node's built-in SQLite (node:sqlite) — zero native compilation needed.
+import { DatabaseSync } from 'node:sqlite';
+import { readFileSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-export const db = new Database(join(__dirname, '../../data/bot.db'));
-db.pragma('journal_mode = WAL');
+mkdirSync(join(__dirname, '../../data'), { recursive: true });
+export const db = new DatabaseSync(join(__dirname, '../../data/bot.db'));
+db.exec('PRAGMA journal_mode = WAL');
 db.exec(readFileSync(join(__dirname, 'schema.sql'), 'utf8'));
 
 export const getDriver = db.prepare('SELECT * FROM drivers WHERE telegram_id = ?');
