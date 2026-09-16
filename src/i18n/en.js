@@ -1,0 +1,15 @@
+export default {
+  welcome: `👋 Welcome to TripKeeper!\n\nI'm your driving ledger. Here's how we work:\n\n🚀 Start Shift — begin tracking (I'll ask for your odometer)\n👤 Private Client — same, but for off-app clients\n🏠 Family Mode — just log odometer, no tracking\n\nVoice is your friend: just send voice notes like\n"accepted trip" and "dropped off, 43 pounds via card".\n\n/language — change language`,
+  chooseMode: 'How are we driving today?',
+  modeUber: '🚗 Uber Shift',
+  modePrivate: '👤 Private Client',
+  modeFamily: '🏠 Family Mode',
+  askOdo: '📸 Send me a photo of your odometer (or type the number).',
+  odoSaved: (n) => `✅ Odometer: ${n.toLocaleString()} km. Shift started — good luck!`,
+  tripStarted: '✅ Trip started — tracking km. Tell me when it\'s paid.',
+  tripEnded: (a, p) => `✅ Trip logged: ${a} EGP via ${p}. See you next trip!`,
+  shiftEnded: '✅ Shift ended. Report coming at your set hour.',
+  noShift: 'You have no active shift. Tap "Start Shift" first.',
+  alreadyShift: 'You already have an active shift.',
+  notUnderstood: '🤔 Didn\'t catch that. Try: "accepted trip" or "trip ended, 43 via card".',
+};
