@@ -7,8 +7,19 @@ export function parseTripEnd(text) {
   const t2 = text.toLowerCase();
   if (!/(trip ended|dropped off|خلصت|доехал|закончил)/.test(t2)) return null;
   const num = t2.match(/(\d+[.,]?\d*)/);
-  if (!num) return null;
-  const amount = parseFloat(num[1].replace(',', '.'));
+  let amount;
+  if (num) amount = parseFloat(num[1].replace(',', '.'));
+  else {
+    // Arabic spoken numbers: واحد..تسعة, عشرين، خمسين، مية/مائة
+    const units = {واحد:1,اتنين:2,إثنين:2,تلاتة:3,ثلاثة:3,اربعة:4,أربعة:4,خمسة:5,ستة:6,سبعة:7,تمنية:8,ثمانية:8,تسعة:9};
+    const tens  = {عشرين:20,تلاتين:30,ثلاثين:30,اربعين:40,أربعين:40,خمسين:50,ستين:60,سبعين:70,ثمانين:80,تسعين:90};
+    let val = 0, found = false;
+    for (const [w,v] of Object.entries(units)) if (t2.includes(w)) { val += v; found = true; }
+    for (const [w,v] of Object.entries(tens))  if (t2.includes(w)) { val += v; found = true; }
+    if (/(مية|مائة|ميّة)/.test(t2)) { val = Math.max(val,1)*100; found = true; }
+    if (!found) return null;
+    amount = val;
+  }
   const payment = /(card|كارت|картой|карта)/.test(t2) ? 'card' : 'cash';
   return { amount, payment };
 }
