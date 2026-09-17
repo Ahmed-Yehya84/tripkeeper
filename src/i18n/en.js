@@ -12,4 +12,6 @@ export default {
   noShift: 'You have no active shift. Tap "Start Shift" first.',
   alreadyShift: 'You already have an active shift.',
   notUnderstood: '🤔 Didn\'t catch that. Try: "accepted trip" or "trip ended, 43 via card".',
+  voiceEmpty: 'I heard silence — try again.',
+  voiceError: 'Whisper is warming up or something went wrong — try again in a moment.',
 };

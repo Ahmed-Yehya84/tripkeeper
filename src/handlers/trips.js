@@ -14,23 +14,25 @@ export function parseTripEnd(text) {
 }
 
 export function registerTripHandlers(bot) {
-  // TEXT input for now — voice/Whisper plug into the same function
   bot.on('text', (ctx) => {
     const d = getOrCreateDriver(ctx.from.id, ctx.from.first_name);
-    const shift = getActiveShift.get(d.id);
-    const parsed = parseTripEnd(ctx.message.text);
-    if (parsed) return handleTripEnd(ctx, d, shift, parsed, ctx.message.text);
-    if (/^(accepted|بدأت|принял)/i.test(ctx.message.text)) return handleTripStart(ctx, d, shift);
+    return processInput(ctx, d, ctx.message.text);
   });
+}
+
+// ONE brain for both text and voice transcripts
+export async function processInput(ctx, d, text) {
+  const shift = getActiveShift.get(d.id);
+  const parsed = parseTripEnd(text);
+  if (parsed) return handleTripEnd(ctx, d, shift, parsed, text);
+  if (/^(accepted|بدأت|принял)/i.test(text)) return handleTripStart(ctx, d, shift);
+  return ctx.reply(t(d.language, 'notUnderstood'));
 }
 
 export function handleTripStart(ctx, d, shift) {
   if (!shift) return ctx.reply(t(d.language, 'noShift'));
-  db.prepare("UPDATE trips SET accepted_at = ?, active = 1 WHERE id = ("
-    + "SELECT id FROM trips WHERE shift_id = ? AND active = 1 ORDER BY id DESC LIMIT 1)"
-  ).run(new Date().toISOString(), shift.id);
   db.prepare('INSERT INTO trips (driver_id, car_id, shift_id, mode, accepted_at, active) VALUES (?, ?, ?, ?, ?, 1)')
-    .run(d.id, shift.car_id, shift.id, 'uber', new Date().toISOString());
+    .run(d.id, shift.car_id, shift.id, shift.mode, new Date().toISOString());
   return ctx.reply(t(d.language, 'tripStarted'));
 }
 
