@@ -42,7 +42,7 @@ export function registerShiftHandlers(bot) {
   // /cancel — close any active shift/trip cleanly (escape hatch)
   bot.command('cancel', (ctx) => {
     const d = getOrCreateDriver(ctx.from.id, ctx.from.first_name);
-    db.prepare('UPDATE trips SET active = 0 WHERE driver_id = ? AND active = 1').run(d.id);
+    db.prepare('UPDATE trips SET dropped_at = ?, verdict = \'cancelled\' WHERE driver_id = ? AND accepted_at IS NOT NULL AND dropped_at IS NULL').run(new Date().toISOString(), d.id);
     const r = db.prepare('UPDATE shifts SET status = \'cancelled\', ended_at = ? WHERE driver_id = ? AND status = \'active\'').run(new Date().toISOString(), d.id);
     return ctx.reply(r.changes ? '🧹 Shift cancelled. Nothing was lost — start fresh whenever you like.' : 'Nothing to cancel — you\'re clear.');
   });
