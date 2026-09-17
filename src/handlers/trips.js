@@ -16,6 +16,8 @@ export function parseTripEnd(text) {
 export function registerTripHandlers(bot) {
   bot.on('text', (ctx) => {
     const d = getOrCreateDriver(ctx.from.id, ctx.from.first_name);
+    // pure numbers are odometer input — leave them for the odometer handler
+    if (/^\d{1,7}$/.test(ctx.message.text.trim())) return;
     return processInput(ctx, d, ctx.message.text);
   });
 }
