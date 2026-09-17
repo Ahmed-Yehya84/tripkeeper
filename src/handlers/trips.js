@@ -25,10 +25,10 @@ export function parseTripEnd(text) {
 }
 
 export function registerTripHandlers(bot) {
-  bot.on('text', (ctx) => {
+  bot.on('text', (ctx, next) => {
     const d = getOrCreateDriver(ctx.from.id, ctx.from.first_name);
-    // pure numbers are odometer input — leave them for the odometer handler
-    if (/^\d{1,7}$/.test(ctx.message.text.trim())) return;
+    // pure numbers are odometer input — pass them down the chain
+    if (/^\d{1,7}$/.test(ctx.message.text.trim())) return next();
     return processInput(ctx, d, ctx.message.text);
   });
 }
