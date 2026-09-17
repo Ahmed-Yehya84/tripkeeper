@@ -44,8 +44,9 @@ export async function processInput(ctx, d, text) {
 
 export function handleTripStart(ctx, d, shift) {
   if (!shift) return ctx.reply(t(d.language, 'noShift'));
+  // NOTE: shifts table has no mode column (known schema gap) — trips default to 'uber'
   db.prepare('INSERT INTO trips (driver_id, car_id, shift_id, mode, accepted_at) VALUES (?, ?, ?, ?, ?)')
-    .run(d.id, shift.car_id, shift.id, shift.mode, new Date().toISOString());
+    .run(d.id, shift.car_id, shift.id, 'uber', new Date().toISOString());
   return ctx.reply(t(d.language, 'tripStarted'));
 }
 
