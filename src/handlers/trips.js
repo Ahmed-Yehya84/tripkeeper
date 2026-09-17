@@ -27,13 +27,13 @@ export async function processInput(ctx, d, text) {
   const shift = getActiveShift.get(d.id);
   const parsed = parseTripEnd(text);
   if (parsed) return handleTripEnd(ctx, d, shift, parsed, text);
-  if (/^(accepted|بدأت|принял)/i.test(text)) return handleTripStart(ctx, d, shift);
+  if (/(accept|принял|принима|بدأ|بدا|ناول)/i.test(text)) return handleTripStart(ctx, d, shift);
   return ctx.reply(t(d.language, 'notUnderstood'));
 }
 
 export function handleTripStart(ctx, d, shift) {
   if (!shift) return ctx.reply(t(d.language, 'noShift'));
-  db.prepare('INSERT INTO trips (driver_id, car_id, shift_id, mode, accepted_at, active) VALUES (?, ?, ?, ?, ?, 1)')
+  db.prepare('INSERT INTO trips (driver_id, car_id, shift_id, mode, accepted_at) VALUES (?, ?, ?, ?, ?)')
     .run(d.id, shift.car_id, shift.id, shift.mode, new Date().toISOString());
   return ctx.reply(t(d.language, 'tripStarted'));
 }
