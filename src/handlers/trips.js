@@ -51,11 +51,11 @@ export function handleTripStart(ctx, d, shift) {
 
 export function handleTripEnd(ctx, d, shift, parsed, transcript) {
   if (!shift) return ctx.reply(t(d.language, 'noShift'));
-  const trip = db.prepare('SELECT * FROM trips WHERE shift_id = ? AND active = 1 ORDER BY id DESC LIMIT 1').get(shift.id);
+  const trip = db.prepare('SELECT * FROM trips WHERE shift_id = ? AND accepted_at IS NOT NULL AND dropped_at IS NULL ORDER BY id DESC LIMIT 1').get(shift.id);
   if (!trip) return ctx.reply(t(d.language, 'notUnderstood'));
   const now = new Date().toISOString();
   const pnl = calcTripPnL({ driverId: d.id, mode: trip.mode, amount: parsed.amount, payment: parsed.payment, km: 0 });
-  db.prepare(`UPDATE trips SET dropped_at = ?, amount = ?, payment = ?, uber_cut = ?, net_earnings = ?, cost = ?, profit = ?, raw_transcript = ?, active = 0 WHERE id = ?`)
+  db.prepare(`UPDATE trips SET dropped_at = ?, amount = ?, payment = ?, uber_cut = ?, net_earnings = ?, cost = ?, profit = ?, raw_transcript = ? WHERE id = ?`)
     .run(now, parsed.amount, parsed.payment, pnl?.uberCut ?? 0, pnl?.gross ?? 0, pnl?.cost ?? 0, pnl?.profit ?? 0, transcript, trip.id);
   return ctx.reply(t(d.language, 'tripEnded', parsed.amount, parsed.payment === 'card' ? '💳 card' : '💵 cash'));
 }
